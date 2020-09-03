@@ -38,5 +38,7 @@ class importData extends Command
     public function handle()
     {
         $this->call('migrate');
+        $this->call('serve');
+
     }
 }
