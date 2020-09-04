@@ -15,6 +15,16 @@ class Client extends Model
     public function city()
     {
     	return $this->belongsTo('App\City');
+    }    
+
+    public function scopeSearch($query, $name){
+        if(!empty($name)){
+            $query = $query->whereHas('city', function($query) use ($name){
+                $query->where('name', 'LIKE', "%$name%");
+            });
+
+        return $query;
+        }
     }
 
 }

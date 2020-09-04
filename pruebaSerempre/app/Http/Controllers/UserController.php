@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -13,7 +14,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $users = User::orderBy('id', 'DESC')->paginate(2);
+        return view('users.index', compact('users'));
     }
 
     /**
@@ -55,8 +57,10 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
-    {
-        //
+    {        
+        $user = User::findOrFail($id);
+
+        return view('users.edit', compact('user'));
     }
 
     /**
@@ -68,7 +72,19 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'name'      =>  'required|min:3'
+        ];
+
+        $this->validate($request, $rules);
+
+        $user = User::find($id);
+
+        $user->name    =  $request->input('name');
+
+        $user->save();
+
+        return redirect()->route('usuarios')->with('message', 'Se ha actualizado el usuario correctamente.');
     }
 
     /**
@@ -79,6 +95,10 @@ class UserController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $user->delete();
+        
+        return redirect()->back()->with('message', 'Se ha eliminado el usuario correctamente.');
     }
 }

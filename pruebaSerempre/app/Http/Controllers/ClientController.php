@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Client;
+use App\City;
 use Illuminate\Http\Request;
 
 class ClientController extends Controller
@@ -12,9 +13,12 @@ class ClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
+    public function index(Request $request)
+    {        
+        $clients = Client::orderBy('id', 'ASC')
+        ->search($request->name)
+        ->paginate(3);
+        return view('clients.index', compact('clients'));
     }
 
     /**
@@ -24,7 +28,8 @@ class ClientController extends Controller
      */
     public function create()
     {
-        //
+        $cities = City::all();
+        return view('clients.create', compact('cities'));
     }
 
     /**
@@ -35,7 +40,22 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $rules = [
+            'name'      =>  'required|min:3',
+            'city_id'   =>  'required|numeric'
+        ];
+
+        $this->validate($request, $rules);
+
+        $client = new Client();
+
+        $client->name    =  $request->input('name');
+        $client->city_id =  $request->input('city_id');
+
+        $client->save();
+
+        return redirect()->route('clientes')->with('message', 'Se ha agregado el cliente correctamente.');
+
     }
 
     /**
@@ -55,9 +75,14 @@ class ClientController extends Controller
      * @param  \App\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function edit(Client $client)
+    public function edit($id)
     {
-        //
+        $cities = City::all();
+        $client = Client::findOrFail($id);
+
+        return view('clients.edit', compact('client'))
+        ->with('cities', $cities);
+
     }
 
     /**
@@ -67,9 +92,24 @@ class ClientController extends Controller
      * @param  \App\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Client $client)
+    public function update(Request $request, $id)
     {
-        //
+        $rules = [
+            'name'      =>  'required|min:3',
+            'city_id'   =>  'required|numeric'
+        ];
+        
+        $this->validate($request, $rules);
+
+        $client = Client::find($id);
+
+        $client->name    =  $request->input('name');
+        $client->city_id =  $request->input('city_id');
+
+        $client->save();
+
+        return redirect()->route('clientes')->with('message', 'Se ha actualizado el cliente correctamente.');
+        
     }
 
     /**
@@ -78,8 +118,12 @@ class ClientController extends Controller
      * @param  \App\Client  $client
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Client $client)
+    public function destroy($id)
     {
-        //
+        $client = Client::findOrFail($id);
+
+        $client->delete();
+        
+        return redirect()->back()->with('message', 'Se ha eliminado el cliente correctamente.');
     }
 }
