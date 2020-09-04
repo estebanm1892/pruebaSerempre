@@ -41,7 +41,9 @@
                     @endforeach     
                     <a href="{{ route('ciudades/agregar') }}" class="btn btn-success mt-4 ml-3">  Agregar Ciudad </a>
                     {{-- Pagination --}}
-                    @include('layouts.partials._paginator')                        
+                    <div class="d-flex justify-content-center">
+                        {!! $cities->links() !!}
+                    </div>                        
                 </div>
             </div>
         </div>
