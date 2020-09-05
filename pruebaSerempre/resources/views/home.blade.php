@@ -14,7 +14,8 @@
                         </div>
                     @endif
 
-                    {{ __('You are logged in!') }}
+                    {{ __('¡Estas dentro!') }}
+                    {{ __('Navega a traves de las opciones.') }}
                 </div>
             </div>
         </div>
